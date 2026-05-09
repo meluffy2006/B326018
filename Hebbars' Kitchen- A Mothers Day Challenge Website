@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hebbars Kitchen - Simple Indian Recipes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #d4841f;
+            --secondary: #2d5016;
+            --accent: #c41e3a;
+            --cream: #fef7f3;
+            --light-cream: #fff9f5;
+            --dark-text: #2c2c2c;
+            --light-text: #555;
+            --border: #e8dcc8;
+            --shadow: 0 4px 20px rgba(212, 132, 31, 0.12);
+            --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--light-cream) 0%, #fef5f0 100%);
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #e8a138 100%);
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem 1rem;
+            flex-wrap: wrap;
+            background: var(--light-cream);
+        }
+
+        .nav-btn {
+            padding: 0.8rem 2rem;
+            border: 2px solid var(--border);
+            background: white;
+            color: var(--dark-text);
+            cursor: pointer;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .nav-btn:hover,
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Recipe Finder Section */
+        .recipe-finder {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .finder-title {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+        }
+
+        .input-label {
+            display: block;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 0.8rem;
+            font-size: 1.05rem;
+        }
+
+        .input-description {
+            font-size: 0.9rem;
+            color: var(--light-text);
+            margin-bottom: 1rem;
+        }
+
+        /* Image Upload */
+        .image-upload-area {
+            border: 3px dashed var(--primary);
+            border-radius: 15px;
+            padding: 2.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--light-cream);
+        }
+
+        .image-upload-area:hover {
+            background: #fef0e8;
+            border-color: var(--secondary);
+            transform: scale(1.02);
+        }
+
+        .image-upload-area.dragging {
+            background: var(--cream);
+            border-color: var(--secondary);
+            transform: scale(1.03);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .image-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* Text Input */
+        .text-input {
+            width: 100%;
+            padding: 1.2rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(212, 132, 31, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #e8a138 100%);
+            color: white;
+            box-shadow: var(--shadow);
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(212, 132, 31, 0.25);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+
+        .btn-secondary:hover {
+            background: #1f3a0f;
+            transform: translateY(-2px);
+        }
+
+        .btn-small {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Recipe Display */
+        .recipe-display {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .recipe-header {
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .recipe-title {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .recipe-subtitle {
+            color: var(--light-text);
+            font-size: 1.05rem;
+        }
+
+        /* Ingredients */
+        .ingredients-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+        }
+
+        .ingredient-item {
+            padding: 0.8rem;
+            background: var(--light-cream);
+            margin-bottom: 0.8rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .ingredient-item input[type="checkbox"] {
+            margin-right: 1rem;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        /* Steps */
+        .steps-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .step-item {
+            background: linear-gradient(135deg, var(--light-cream) 0%, #fef5f0 100%);
+            padding: 1.5rem;
+            margin-bottom: 1.2rem;
+            border-radius: 12px;
+            border-left: 5px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .step-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: 700;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--dark-text);
+        }
+
+        /* Feedback Section */
+        .feedback-section {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .feedback-title {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .feedback-form {
+            background: var(--light-cream);
+            padding: 2rem;
+            border-radius: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-text);
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(212, 132, 31, 0.1);
+        }
+
+        .rating {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .star {
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            filter: grayscale(100%);
+        }
+
+        .star:hover,
+        .star.selected {
+            filter: grayscale(0%);
+            transform: scale(1.1);
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 1.2rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            animation: slideDown 0.3s ease;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #bee5eb;
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--secondary);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .recipe-finder,
+            .recipe-display,
+            .feedback-section {
+                padding: 1.5rem;
+            }
+
+            .recipe-title {
+                font-size: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .nav-btn {
+                padding: 0.7rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .finder-title,
+            .feedback-title {
+                font-size: 1.4rem;
+            }
+
+            .recipe-finder,
+            .recipe-display,
+            .feedback-section {
+                padding: 1.2rem;
+                border-radius: 15px;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--light-text);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-text {
+            font-size: 1.1rem;
+        }
+
+        /* Success Message */
+        .success-animation {
+            animation: successPulse 0.6s ease;
+        }
+
+        @keyframes successPulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🍳 Hebbars Kitchen</h1>
+        <p>Simple Indian Recipes • Step-by-Step Guides • For Every Home</p>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-tabs">
+        <button class="nav-btn active" data-tab="finder">Find Recipe</button>
+        <button class="nav-btn" data-tab="recipes">My Recipes</button>
+        <button class="nav-btn" data-tab="feedback">Feedback</button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Recipe Finder Section -->
+        <div id="finder" class="section active">
+            <div class="recipe-finder">
+                <h2 class="finder-title">📸 Find Your Recipe</h2>
+
+                <!-- Image Upload -->
+                <div class="input-group">
+                    <label class="input-label">Upload a Photo</label>
+                    <p class="input-description">Click or drag a photo of your ingredients to identify recipes</p>
+                    <div class="image-upload-area" id="imageUploadArea">
+                        <div class="upload-icon">📷</div>
+                        <p style="font-weight: 600; margin-bottom: 0.5rem;">Click or drag image here</p>
+                        <p style="color: var(--light-text); font-size: 0.9rem;">JPG, PNG up to 5MB</p>
+                        <input type="file" id="imageInput" accept="image/*">
+                    </div>
+                    <img id="previewImage" class="preview-image" style="display: none;">
+                </div>
+
+                <!-- Or Divider -->
+                <div style="text-align: center; margin: 2rem 0; color: var(--light-text); font-weight: 600;">
+                    — OR —
+                </div>
+
+                <!-- Text Input -->
+                <div class="input-group">
+                    <label class="input-label">Type Your Ingredients</label>
+                    <p class="input-description">Write what ingredients or dish you want to cook</p>
+                    <textarea id="textInput" class="text-input" placeholder="e.g., chicken, rice, and spices&#10;or&#10;butter chicken recipe&#10;or&#10;samosa filling..."></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button class="btn btn-primary" id="findRecipeBtn">Find Recipe 🔍</button>
+                <div id="finderAlert"></div>
+            </div>
+        </div>
+
+        <!-- My Recipes Section -->
+        <div id="recipes" class="section">
+            <div id="recipeResults"></div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div id="feedback" class="section">
+            <div class="feedback-section">
+                <h2 class="feedback-title">💬 Share Your Feedback</h2>
+                <p style="text-align: center; color: var(--light-text); margin-bottom: 2rem;">
+                    Help us improve by sharing your cooking experience
+                </p>
+
+                <div class="feedback-form">
+                    <div class="form-group">
+                        <label class="form-label">Recipe Cooked</label>
+                        <input type="text" id="feedbackRecipe" class="form-input" placeholder="Which recipe did you make?">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Rate Your Experience</label>
+                        <div class="rating" id="ratingStars">
+                            <span class="star" data-rating="1">⭐</span>
+                            <span class="star" data-rating="2">⭐</span>
+                            <span class="star" data-rating="3">⭐</span>
+                            <span class="star" data-rating="4">⭐</span>
+                            <span class="star" data-rating="5">⭐</span>
+                        </div>
+                        <input type="hidden" id="selectedRating" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">What did you cook? (Photo)</label>
+                        <div class="image-upload-area" style="margin-top: 0.8rem;" id="feedbackImageArea">
+                            <div class="upload-icon">📸</div>
+                            <p style="font-weight: 600;">Click or drag image here</p>
+                            <input type="file" id="feedbackImageInput" accept="image/*">
+                        </div>
+                        <img id="feedbackPreviewImage" class="preview-image" style="display: none;">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Your Comments</label>
+                        <textarea id="feedbackComments" class="form-textarea" placeholder="Share your experience... How did it turn out? Any tips for others?"></textarea>
+                    </div>
+
+                    <button class="btn btn-primary" id="submitFeedbackBtn">Submit Feedback 📤</button>
+                    <div id="feedbackAlert"></div>
+                </div>
+
+                <!-- Feedback Display -->
+                <div style="margin-top: 3rem;">
+                    <h3 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 1.3rem;">Recent Feedback</h3>
+                    <div id="feedbackList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2024 Hebbars Kitchen | Made with ❤️ for Indian Home Cooking</p>
+    </div>
+
+    <script>
+        // ============ RECIPE DATABASE ============
+        const recipeDatabase = {
+            // Search keywords mapped to recipes
+            'chicken': [
+                {
+                    name: 'Butter Chicken',
+                    description: 'Creamy tomato-based Indian curry with tender chicken pieces',
+                    ingredients: [
+                        '500g chicken breast, cubed',
+                        '2 tbsp butter',
+                        '2 cups tomato puree',
+                        '1 cup heavy cream',
+                        '2 tsp ginger-garlic paste',
+                        '1 tsp red chili powder',
+                        '1 tsp garam masala',
+                        '2 onions, finely chopped',
+                        'Salt to taste',
+                        'Oil for cooking'
+                    ],
+                    steps: [
+                        { title: 'Marinate Chicken', content: 'Mix chicken with yogurt, ginger-garlic paste, red chili powder, and salt. Let it rest for 30 minutes to 2 hours in the refrigerator. This helps tenderize the chicken and infuse flavors.' },
+                        { title: 'Cook Chicken', content: 'Heat 2 tbsp oil in a pan over high heat. Add marinated chicken and cook for 5-7 minutes until golden on all sides. Remove and keep aside. This step seals the chicken and adds a nice golden color.' },
+                        { title: 'Prepare Base', content: 'In the same pan, add butter and chopped onions. Sauté until onions turn golden brown (about 5 minutes). Add ginger-garlic paste and cook for 1 minute until fragrant.' },
+                        { title: 'Add Tomato Sauce', content: 'Pour in tomato puree and cook for 3-4 minutes on medium heat, stirring occasionally. This reduces the acidity and deepens the tomato flavor.' },
+                        { title: 'Combine & Simmer', content: 'Add the cooked chicken back to the pan. Add garam masala and red chili powder. Mix well and simmer for 8-10 minutes on medium heat.' },
+                        { title: 'Add Cream', content: 'Pour in heavy cream and stir well. Simmer for another 5 minutes. Taste and adjust salt if needed. The sauce should be creamy and slightly thick.' },
+                        { title: 'Garnish & Serve', content: 'Garnish with fresh coriander leaves and serve hot with basmati rice, naan, or roti. Enjoy your homemade butter chicken!' }
+                    ]
+                }
+            ],
+            'dosa': [
+                {
+                    name: 'Crispy Dosa',
+                    description: 'South Indian fermented rice and lentil crepes, golden and crispy',
+                    ingredients: [
+                        '2 cups rice',
+                        '1 cup urad dal',
+                        '4 tbsp fenugreek seeds',
+                        '2 tsp salt',
+                        'Water as needed',
+                        'Oil for cooking'
+                    ],
+                    steps: [
+                        { title: 'Soak Ingredients', content: 'Soak rice and urad dal separately in water for 4-5 hours. This softens them for grinding.' },
+                        { title: 'Grind Rice', content: 'Grind soaked rice with minimal water until you get a coarse paste. Should take about 5-10 minutes.' },
+                        { title: 'Grind Urad Dal', content: 'Grind soaked urad dal with water until you get a light, fluffy batter. This should take 15-20 minutes to get air into it.' },
+                        { title: 'Mix Batters', content: 'Combine rice and urad dal batters. Add salt and fenugreek seeds. Mix well.' },
+                        { title: 'Ferment', content: 'Keep the batter covered in a warm place for 8-12 hours to ferment. You will see bubbles on the surface when ready.' },
+                        { title: 'Prepare Pan', content: 'Heat a non-stick dosa pan (or cast iron) on high heat. Sprinkle water to check - it should sizzle immediately.' },
+                        { title: 'Make Dosa', content: 'Pour 1 ladle of batter in the center and spread with the back of the ladle in a circular motion. Drizzle oil around edges. Cook for 1 minute until crispy.' },
+                        { title: 'Flip & Finish', content: 'Flip and cook the other side for 30 seconds. Serve hot with sambar and chutney!' }
+                    ]
+                }
+            ],
+            'samosa': [
+                {
+                    name: 'Traditional Samosa',
+                    description: 'Crispy triangular pastry with spiced potato and pea filling',
+                    ingredients: [
+                        '2 cups all-purpose flour',
+                        '6 tbsp oil',
+                        '1 tsp salt',
+                        'Water for dough',
+                        '4 medium potatoes',
+                        '1 cup frozen peas',
+                        '2 green chilies, minced',
+                        '1 tbsp ginger, minced',
+                        '1 tsp garam masala',
+                        '1 tsp cumin seeds',
+                        'Oil for frying'
+                    ],
+                    steps: [
+                        { title: 'Make Dough', content: 'Mix flour and salt. Add 6 tbsp oil gradually and mix until it resembles breadcrumbs. Add water little by little and knead a firm dough. Let it rest for 30 minutes.' },
+                        { title: 'Prepare Filling', content: 'Boil and mash potatoes. Heat 2 tbsp oil and temper cumin seeds. Add mashed potatoes, peas, green chilies, and ginger. Cook for 3-4 minutes. Add garam masala and salt. Cool completely.' },
+                        { title: 'Roll Dough', content: 'Divide dough into 12 equal balls. Roll each ball into a thin circle.' },
+                        { title: 'Cut Circles', content: 'Cut each circle in half with a knife to get two pieces.' },
+                        { title: 'Form Samosa', content: 'Take one piece, roll into a cone shape, and seal with water. Fill with potato mixture, then seal the top by pressing edges together with water.' },
+                        { title: 'Fry Samosas', content: 'Heat oil in a deep pan to 160-170°C. Gently place samosas and fry until golden brown on all sides, about 5-7 minutes. Remove with a slotted spoon.' },
+                        { title: 'Drain & Serve', content: 'Place on paper towels to remove excess oil. Serve hot with mint chutney and tamarind sauce!' }
+                    ]
+                }
+            ],
+            'rice': [
+                {
+                    name: 'Perfect Basmati Rice',
+                    description: 'Fluffy, fragrant basmati rice cooked to perfection',
+                    ingredients: [
+                        '2 cups basmati rice',
+                        '4 cups water',
+                        '2 tbsp ghee',
+                        '4-5 green cardamom pods',
+                        '2-3 bay leaves',
+                        '1 inch cinnamon stick',
+                        '4-5 cloves',
+                        '1 tsp salt'
+                    ],
+                    steps: [
+                        { title: 'Rinse Rice', content: 'Rinse basmati rice under running water 4-5 times until water runs clear. This removes excess starch.' },
+                        { title: 'Soak Rice', content: 'Soak cleaned rice in water for 30 minutes. This ensures even cooking.' },
+                        { title: 'Heat Ghee', content: 'Heat 2 tbsp ghee in a heavy-bottomed pot. Add whole spices (cardamom, bay leaves, cinnamon, cloves) and let them crackle for 30 seconds.' },
+                        { title: 'Add Rice', content: 'Drain soaked rice and add to the pot. Stir for 1-2 minutes to coat with ghee.' },
+                        { title: 'Add Water', content: 'Pour 4 cups water and add salt. Bring to a boil over high heat.' },
+                        { title: 'Cook Rice', content: 'Once boiling, reduce heat to low, cover with a lid, and cook for 18-20 minutes until all water is absorbed.' },
+                        { title: 'Rest & Serve', content: 'Turn off heat and let the rice rest, covered, for 5 minutes. Fluff with a fork and serve hot!' }
+                    ]
+                }
+            ],
+            'dal': [
+                {
+                    name: 'Comfort Dal Tadka',
+                    description: 'Creamy lentil curry with aromatic tempering',
+                    ingredients: [
+                        '1 cup split yellow lentils (moong dal)',
+                        '4 cups water',
+                        '2 tomatoes, chopped',
+                        '1 tsp turmeric powder',
+                        '2 tsp cumin seeds',
+                        '4 dried red chilies',
+                        '6 garlic cloves, minced',
+                        '2 tbsp ghee',
+                        '1 tsp ginger, minced',
+                        'Salt to taste',
+                        'Fresh coriander for garnish'
+                    ],
+                    steps: [
+                        { title: 'Rinse Lentils', content: 'Rinse dal thoroughly under running water until water runs clear. This removes dirt and dust.' },
+                        { title: 'Cook Dal', content: 'In a pressure cooker, add dal, water, turmeric, salt, and ginger. Close the lid and cook on high heat for 2-3 whistles. Let pressure release naturally.' },
+                        { title: 'Mash Lentils', content: 'Open the cooker and stir the dal. If needed, mash with the back of a spoon to get a creamy consistency. Add more water if too thick.' },
+                        { title: 'Add Tomatoes', content: 'Add chopped tomatoes to the dal and bring to a boil. Cook for 2-3 minutes until tomatoes soften.' },
+                        { title: 'Prepare Tadka', content: 'In a separate small pan, heat 2 tbsp ghee. Add cumin seeds and let them crackle. Add dried red chilies and garlic. Fry for 1 minute until fragrant.' },
+                        { title: 'Add Tadka', content: 'Pour the hot tadka into the dal and stir well. The dal will bubble - this is normal!' },
+                        { title: 'Finish & Serve', content: 'Garnish with fresh coriander and serve hot with rice, roti, or naan. Comfort food at its best!' }
+                    ]
+                }
+            ],
+            'biryani': [
+                {
+                    name: 'Hyderabadi Biryani',
+                    description: 'Fragrant one-pot rice and meat delicacy, fit for royalty',
+                    ingredients: [
+                        '2 cups basmati rice',
+                        '500g mutton/chicken',
+                        '2 onions, sliced',
+                        '2 tbsp ginger-garlic paste',
+                        '4 tbsp ghee',
+                        '1 cup yogurt',
+                        '4 green cardamom pods',
+                        '4 black cardamom pods',
+                        '2 bay leaves',
+                        '1 inch cinnamon',
+                        '4-5 cloves',
+                        '1 tsp red chili powder',
+                        '1 tsp garam masala',
+                        'Saffron strands',
+                        '2 tbsp mint leaves',
+                        'Salt to taste'
+                    ],
+                    steps: [
+                        { title: 'Marinate Meat', content: 'Mix meat with ginger-garlic paste, yogurt, red chili powder, garam masala, salt, and half the fried onions. Marinate for 30 minutes to 2 hours.' },
+                        { title: 'Fry Onions', content: 'Heat 2 tbsp ghee in a pan and fry thinly sliced onions until deep golden brown. Remove and drain on paper towels. These are your biryani garnish!' },
+                        { title: 'Soak Rice', content: 'Rinse rice and soak for 30 minutes. Boil water with whole spices (cardamom, bay leaves, cinnamon, cloves) and salt. Add rice and cook until 70% done. Drain.' },
+                        { title: 'Layer Preparation', content: 'In a heavy-bottomed pot, spread marinated meat evenly at the bottom.' },
+                        { title: 'Add Rice Layer', content: 'Spread the partially cooked rice over the meat. Sprinkle fried onions and mint leaves on top.' },
+                        { title: 'Dum Cooking', content: 'Drizzle remaining ghee on top. Sprinkle saffron soaked in milk. Cover the pot with aluminum foil, then place a tight-fitting lid. Cook on high heat for 1-2 minutes until steam forms, then reduce to low heat.' },
+                        { title: 'Slow Cook', content: 'Cook on low heat for 45 minutes to 1 hour. The steam trapped inside will cook the meat and infuse flavors into the rice.' },
+                        { title: 'Rest & Serve', content: 'Turn off heat and let rest for 5 minutes without opening the lid. Open carefully and gently mix with a fork. Serve hot, a true feast!' }
+                    ]
+                }
+            ],
+            'curry': [
+                {
+                    name: 'Simple Vegetable Curry',
+                    description: 'Wholesome mixed vegetable curry with aromatic spices',
+                    ingredients: [
+                        '2 cups mixed vegetables',
+                        '2 onions, chopped',
+                        '2 tbsp ginger-garlic paste',
+                        '2 tomatoes, chopped',
+                        '1 tsp turmeric',
+                        '1 tsp cumin',
+                        '1 tsp coriander powder',
+                        '2 tbsp oil',
+                        'Salt and pepper',
+                        'Fresh coriander'
+                    ],
+                    steps: [
+                        { title: 'Prepare Vegetables', content: 'Cut all vegetables into even-sized pieces. This ensures uniform cooking.' },
+                        { title: 'Sauté Onions', content: 'Heat oil and add chopped onions. Fry until golden, about 5 minutes.' },
+                        { title: 'Add Paste', content: 'Add ginger-garlic paste and cook for 1 minute until fragrant.' },
+                        { title: 'Add Spices', content: 'Add turmeric, cumin, and coriander powder. Stir well for 30 seconds to release the flavors.' },
+                        { title: 'Add Tomatoes', content: 'Add chopped tomatoes and cook for 2-3 minutes until soft.' },
+                        { title: 'Add Vegetables', content: 'Add all vegetables and salt. Mix well and cover with a lid.' },
+                        { title: 'Simmer', content: 'Cook on medium heat for 8-10 minutes until vegetables are tender but not mushy.' },
+                        { title: 'Garnish & Serve', content: 'Garnish with fresh coriander and serve hot with rice or bread!' }
+                    ]
+                }
+            ]
+        };
+
+        // ============ STORAGE ============
+        const storageKey = 'hebbarsFeedback';
+        const recipesKey = 'hebbarsRecipes';
+
+        function saveFeedback(feedback) {
+            let feedbacks = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            feedbacks.unshift(feedback);
+            localStorage.setItem(storageKey, JSON.stringify(feedbacks));
+        }
+
+        function getFeedbacks() {
+            return JSON.parse(localStorage.getItem(storageKey) || '[]');
+        }
+
+        function saveRecipe(recipe) {
+            let recipes = JSON.parse(localStorage.getItem(recipesKey) || '[]');
+            recipes.unshift(recipe);
+            localStorage.setItem(recipesKey, JSON.stringify(recipes));
+        }
+
+        function getSavedRecipes() {
+            return JSON.parse(localStorage.getItem(recipesKey) || '[]');
+        }
+
+        // ============ UI FUNCTIONS ============
+        function showAlert(elementId, message, type) {
+            const alertDiv = document.getElementById(elementId);
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        function switchTab(tabName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Show selected section
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function displayRecipe(recipe, source = '') {
+            const container = document.getElementById('recipeResults');
+            const sourceText = source ? `<p style="color: var(--light-text); font-size: 0.95rem; margin-bottom: 1rem;">📌 ${source}</p>` : '';
+
+            let ingredientsHTML = recipe.ingredients
+                .map(ing => `<div class="ingredient-item"><input type="checkbox"><span>${ing}</span></div>`)
+                .join('');
+
+            let stepsHTML = recipe.steps
+                .map((step, idx) => `
+                    <div class="step-item">
+                        <div style="display: flex; align-items: flex-start;">
+                            <div class="step-number">${idx + 1}</div>
+                            <div style="flex: 1;">
+                                <h4 style="color: var(--primary); margin-bottom: 0.5rem; font-weight: 700;">${step.title}</h4>
+                                <p class="step-content">${step.content}</p>
+                            </div>
+                        </div>
+                    </div>
+                `)
+                .join('');
+
+            container.innerHTML = `
+                <div class="recipe-display success-animation">
+                    <div class="recipe-header">
+                        <h2 class="recipe-title">${recipe.name}</h2>
+                        <p class="recipe-subtitle">${recipe.description}</p>
+                        ${sourceText}
+                    </div>
+
+                    <div class="ingredients-section">
+                        <h3 class="section-title">📋 Ingredients</h3>
+                        ${ingredientsHTML}
+                    </div>
+
+                    <div class="steps-section">
+                        <h3 class="section-title">👩‍🍳 Cooking Instructions</h3>
+                        ${stepsHTML}
+                    </div>
+
+                    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border); text-align: center;">
+                        <p style="color: var(--light-text); margin-bottom: 1.5rem;">Did you cook this recipe? Share your experience!</p>
+                        <button class="btn btn-secondary" onclick="switchTab('feedback')">Share Feedback 💬</button>
+                        <button class="btn btn-secondary" style="margin-left: 0.5rem;" onclick="saveCurrentRecipe('${recipe.name}')">Save Recipe 💾</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function searchRecipes(query) {
+            query = query.toLowerCase().trim();
+
+            if (!query) {
+                showAlert('finderAlert', 'Please enter ingredients or recipe name', 'error');
+                return;
+            }
+
+            // Search through database
+            let foundRecipes = [];
+            for (const [keyword, recipes] of Object.entries(recipeDatabase)) {
+                if (keyword.includes(query) || query.includes(keyword)) {
+                    foundRecipes.push(...recipes);
+                }
+            }
+
+            if (foundRecipes.length > 0) {
+                displayRecipe(foundRecipes[0], `Found: "${query}"`);
+                switchTab('recipes');
+            } else {
+                displayRecipe({
+                    name: 'Recipe Not Found - Basic Template',
+                    description: 'We don\'t have this specific recipe yet, but here\'s a basic cooking guide',
+                    ingredients: [
+                        `Your main ingredient: ${query}`,
+                        'Onions and garlic',
+                        'Tomatoes',
+                        'Spices (turmeric, cumin, coriander)',
+                        'Oil or ghee',
+                        'Salt and pepper',
+                        'Fresh herbs'
+                    ],
+                    steps: [
+                        { title: 'Preparation', content: 'Gather and prepare all your ingredients. Cut vegetables into uniform sizes for even cooking.' },
+                        { title: 'Sauté Base', content: 'Heat oil or ghee in a pan. Add onions and garlic, sauté until golden brown.' },
+                        { title: 'Add Spices', content: 'Add your chosen spices and toast for 30 seconds to release their flavors.' },
+                        { title: 'Add Main Ingredient', content: `Add your ${query} and mix well with the spices.` },
+                        { title: 'Add Tomatoes', content: 'Add chopped tomatoes and cook for 3-4 minutes until they soften.' },
+                        { title: 'Simmer', content: 'Reduce heat, cover, and let it simmer for 15-20 minutes until fully cooked.' },
+                        { title: 'Finish', content: 'Taste and adjust seasonings. Garnish with fresh herbs and serve hot with rice or bread!' }
+                    ]
+                }, `No exact match for "${query}", but here's a general recipe`);
+                switchTab('recipes');
+            }
+        }
+
+        function saveCurrentRecipe(recipeName) {
+            saveRecipe({
+                name: recipeName,
+                savedDate: new Date().toLocaleDateString(),
+                timestamp: Date.now()
+            });
+            showAlert('recipeResults', '✅ Recipe saved! You can view it anytime.', 'success');
+        }
+
+        // ============ IMAGE HANDLING ============
+        function handleImageUpload(file, previewId) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById(previewId);
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Image upload area click
+        document.getElementById('imageUploadArea').addEventListener('click', () => {
+            document.getElementById('imageInput').click();
+        });
+
+        // Image input change
+        document.getElementById('imageInput').addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleImageUpload(e.target.files[0], 'previewImage');
+            }
+        });
+
+        // Drag and drop
+        const uploadArea = document.getElementById('imageUploadArea');
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragging');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragging');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragging');
+            if (e.dataTransfer.files[0]) {
+                document.getElementById('imageInput').files = e.dataTransfer.files;
+                handleImageUpload(e.dataTransfer.files[0], 'previewImage');
+            }
+        });
+
+        // Feedback image upload
+        document.getElementById('feedbackImageArea').addEventListener('click', () => {
+            document.getElementById('feedbackImageInput').click();
+        });
+
+        document.getElementById('feedbackImageInput').addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleImageUpload(e.target.files[0], 'feedbackPreviewImage');
+            }
+        });
+
+        // ============ RECIPE FINDER ============
+        document.getElementById('findRecipeBtn').addEventListener('click', () => {
+            const imageInput = document.getElementById('imageInput').files[0];
+            const textInput = document.getElementById('textInput').value;
+
+            if (imageInput) {
+                // Simulate image recognition
+                const fileName = imageInput.name.toLowerCase();
+                let query = '';
+
+                // Try to guess from filename
+                if (fileName.includes('chicken')) query = 'chicken';
+                else if (fileName.includes('dosa')) query = 'dosa';
+                else if (fileName.includes('biryani')) query = 'biryani';
+                else if (fileName.includes('dal')) query = 'dal';
+                else if (fileName.includes('rice')) query = 'rice';
+                else if (fileName.includes('samosa')) query = 'samosa';
+                else query = 'curry';
+
+                searchRecipes(query);
+            } else if (textInput) {
+                searchRecipes(textInput);
+            } else {
+                showAlert('finderAlert', 'Please upload an image or write ingredients', 'error');
+            }
+        });
+
+        // ============ FEEDBACK SYSTEM ============
+        let selectedRating = 0;
+
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', () => {
+                selectedRating = parseInt(star.dataset.rating);
+                document.getElementById('selectedRating').value = selectedRating;
+                document.querySelectorAll('.star').forEach((s, idx) => {
+                    if (idx < selectedRating) {
+                        s.classList.add('selected');
+                    } else {
+                        s.classList.remove('selected');
+                    }
+                });
+            });
+        });
+
+        document.getElementById('submitFeedbackBtn').addEventListener('click', () => {
+            const recipe = document.getElementById('feedbackRecipe').value;
+            const comments = document.getElementById('feedbackComments').value;
+            const rating = parseInt(document.getElementById('selectedRating').value);
+
+            if (!recipe) {
+                showAlert('feedbackAlert', 'Please enter which recipe you cooked', 'error');
+                return;
+            }
+
+            if (rating === 0) {
+                showAlert('feedbackAlert', 'Please rate your experience', 'error');
+                return;
+            }
+
+            if (!comments) {
+                showAlert('feedbackAlert', 'Please share your comments', 'error');
+                return;
+            }
+
+            const feedback = {
+                recipe: recipe,
+                rating: rating,
+                comments: comments,
+                image: document.getElementById('feedbackPreviewImage').src || '',
+                date: new Date().toLocaleDateString(),
+                timestamp: Date.now()
+            };
+
+            saveFeedback(feedback);
+            showAlert('feedbackAlert', '✅ Thank you! Your feedback helps us improve.', 'success');
+
+            // Reset form
+            document.getElementById('feedbackRecipe').value = '';
+            document.getElementById('feedbackComments').value = '';
+            document.getElementById('selectedRating').value = 0;
+            document.getElementById('feedbackImageInput').value = '';
+            document.getElementById('feedbackPreviewImage').style.display = 'none';
+            selectedRating = 0;
+            document.querySelectorAll('.star').forEach(s => s.classList.remove('selected'));
+
+            displayFeedbacks();
+        });
+
+        function displayFeedbacks() {
+            const feedbacks = getFeedbacks();
+            const feedbackList = document.getElementById('feedbackList');
+
+            if (feedbacks.length === 0) {
+                feedbackList.innerHTML = '<p style="text-align: center; color: var(--light-text);">No feedback yet. Be the first to share! 🌟</p>';
+                return;
+            }
+
+            feedbackList.innerHTML = feedbacks.map((fb, idx) => `
+                <div style="background: var(--light-cream); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.2rem; border-left: 4px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <div>
+                            <h4 style="color: var(--secondary); margin-bottom: 0.3rem; font-weight: 700;">${fb.recipe}</h4>
+                            <p style="color: var(--light-text); font-size: 0.9rem;">${fb.date}</p>
+                        </div>
+                        <div style="font-size: 1.2rem;">
+                            ${'⭐'.repeat(fb.rating)}
+                        </div>
+                    </div>
+                    <p style="color: var(--dark-text); margin-bottom: 1rem;">${fb.comments}</p>
+                    ${fb.image ? `<img src="${fb.image}" style="max-width: 100%; max-height: 200px; border-radius: 8px;">` : ''}
+                </div>
+            `).join('');
+        }
+
+        // ============ NAVIGATION ============
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(tabName).classList.add('active');
+                btn.classList.add('active');
+
+                if (tabName === 'feedback') {
+                    displayFeedbacks();
+                }
+            });
+        });
+
+        // ============ INITIAL LOAD ============
+        document.addEventListener('DOMContentLoaded', () => {
+            displayFeedbacks();
+        });
+
+        // ============ KEYBOARD SHORTCUTS ============
+        document.addEventListener('keypress', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                document.getElementById('findRecipeBtn').click();
+            }
+        });
+    </script>
+</body>
+</html>
