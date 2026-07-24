@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whispr — Speak Freely</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Left hero */
+    .auth-hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 66px 59px;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-hero::before {
+      content: '';
+      position: absolute;
+      top: -100px; left: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(124,92,252,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .auth-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; right: -80px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(240,95,164,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 64px; }
+    .hero-logo-icon {
+      width: 44px; height: 44px;
+      background: var(--gradient-main); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; box-shadow: 0 4px 20px rgba(124,92,252,0.4);
+    }
+    .hero-logo-text {
+      font-size: 39px; font-weight: 700;
+      background: var(--gradient-main);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-heading { font-size: 48px; font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 20px; }
+    .hero-heading span {
+      background: var(--gradient-main);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-subtext { font-size: 16px; color: var(--text-secondary); line-height: 1.7; max-width: 360px; margin-bottom: 48px; }
+    .hero-features { display: flex; flex-direction: column; gap: 16px; }
+    .hero-feature { display: flex; align-items: center; gap: 14px; font-size: 14px; color: var(--text-secondary); }
+    .hero-feature-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .icon-purple { background: rgba(124,92,252,0.15); }
+    .icon-blue   { background: rgba(79,172,254,0.15); }
+
+    /* Right panel */
+    .auth-right {
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 48px;
+      border-left: 1px solid var(--glass-border);
+    }
+    .auth-box { width: 100%; max-width: 420px; }
+
+    /* Tabs */
+    .auth-tabs {
+      display: flex;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+    .auth-tab {
+      flex: 1; padding: 10px; border: none; border-radius: 6px;
+      background: transparent; color: var(--text-secondary);
+      font-family: inherit; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: var(--transition);
+    }
+    .auth-tab.active {
+      background: var(--gradient-main); color: #fff;
+      box-shadow: 0 2px 12px rgba(124,92,252,0.35);
+    }
+
+    /* Form */
+    .auth-form-heading { margin-bottom: 6px; font-size: 24px; font-weight: 700; }
+    .auth-form-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
+    .auth-form { display: flex; flex-direction: column; gap: 18px; }
+
+    .anon-warning {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 13px 15px;
+      background: rgba(255,154,60,0.08); border: 1px solid rgba(255,154,60,0.2);
+      border-radius: var(--radius-sm); font-size: 12.5px; color: #ffbe6b; line-height: 1.55;
+    }
+
+    .auth-submit-btn { width: 100%; padding: 14px; font-size: 15px; }
+    .auth-divider { text-align: center; font-size: 13px; color: var(--text-muted); margin: 4px 0; }
+    .auth-divider a { color: var(--accent-purple); text-decoration: none; }
+
+    .password-toggle { position: relative; }
+    .password-toggle .input-field { padding-right: 44px; }
+    .toggle-eye {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); font-size: 18px; padding: 4px; transition: var(--transition);
+    }
+    .toggle-eye:hover { color: var(--text-secondary); }
+
+    /* Inline error box */
+    .err-box {
+      display: none; align-items: flex-start; gap: 10px;
+      padding: 12px 14px;
+      background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.25);
+      border-radius: var(--radius-sm); font-size: 13px; color: #ff8080; line-height: 1.5;
+      animation: slideDown 0.3s ease;
+    }
+    .err-box.show { display: flex; }
+
+    @media (max-width: 860px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-hero { display: none; }
+      .auth-right { padding: 32px 24px; border-left: none; }
+      .auth-box { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-page">
+
+  <!-- LEFT: Branding -->
+  <section class="auth-hero">
+    <div class="hero-logo">
+      <div class="hero-logo-icon">👻</div>
+      <span class="hero-logo-text">Whispr</span>
+    </div>
+    <h1 class="hero-heading">Post your<br>Opinions, <span>without</span><br>fear.</h1>
+    <p class="hero-subtext">
+      A safe space to share honest opinions about organizations, workplaces, and communities — completely anonymously.
+    </p>
+    <div class="hero-features">
+      <div class="hero-feature">
+        <div class="hero-feature-icon icon-purple">🛡️</div>
+        <span>Your identity is <strong style="color:var(--text-primary)">never revealed</strong> — choose an anonymous username</span>
+      </div>
+      <div class="hero-feature">
+        <div class="hero-feature-icon icon-blue">⚡</div>
+        <span>Community votes mark posts as <strong style="color:var(--text-primary)">authentic or spam</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT: Auth Forms -->
+  <section class="auth-right">
+    <div class="auth-box">
+
+      <!-- Tab switcher -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login"    onclick="switchTab('login')">Login</button>
+        <button class="auth-tab"        id="tab-register" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <!-- LOGIN PANEL -->
+      <div id="login-panel">
+        <h2 class="auth-form-heading">Welcome back 👋</h2>
+        <p class="auth-form-sub">Sign in with your anonymous identity</p>
+
+        <form class="auth-form" id="login-form" novalidate>
+          <div class="input-group">
+            <label for="login-username">Anonymous Username</label>
+            <input class="input-field" type="text" id="login-username"
+              placeholder="e.g. shadow_wolf99" autocomplete="username" required />
+          </div>
+          <div class="input-group">
+            <label for="login-password">Password</label>
+            <div class="password-toggle">
+              <input class="input-field" type="password" id="login-password"
+                placeholder="Your password" autocomplete="current-password" required />
+              <button type="button" class="toggle-eye" onclick="togglePw('login-password',this)">👁</button>
+            </div>
+          </div>
+          <div class="err-box" id="login-err">
+            <span>❌</span><span id="login-err-msg"></span>
+          </div>
+          <button type="submit" class="btn btn-primary auth-submit-btn" id="login-btn">Sign In</button>
+        </form>
+
+        <p class="auth-divider mt-16">Don't have an account? <a href="#" onclick="switchTab('register')">Register</a></p>
+      </div>
+
+      <!-- REGISTER PANEL — hidden by default with inline style -->
+      <div id="register-panel" style="display:none;">
+        <h2 class="auth-form-heading">Join anonymously ✨</h2>
+        <p class="auth-form-sub">Create a fake identity — protect your real one</p>
+
+        <form class="auth-form" id="register-form" novalidate>
+          <div class="anon-warning">
+            <span>⚠️</span>
+            <span><strong>Stay anonymous!</strong> Do <em>not</em> use your real name, email, or anything that could identify you. Choose a made-up username.</span>
+          </div>
+          <div class="input-group">
+            <label for="reg-username">Choose an Anonymous Username</label>
+            <input class="input-field" type="text" id="reg-username"
+              placeholder="e.g. ghost_rider42, silent_hawk" autocomplete="off" maxlength="20" required />
+          </div>
+          <div class="input-group">
+            <label for="reg-password">Create a Password</label>
+            <div class="password-toggle">
+              <input class="input-field" type="password" id="reg-password"
+                placeholder="At least 6 characters" autocomplete="new-password" required />
+              <button type="button" class="toggle-eye" onclick="togglePw('reg-password',this)">👁</button>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="reg-confirm">Confirm Password</label>
+            <div class="password-toggle">
+              <input class="input-field" type="password" id="reg-confirm"
+                placeholder="Repeat your password" autocomplete="new-password" required />
+              <button type="button" class="toggle-eye" onclick="togglePw('reg-confirm',this)">👁</button>
+            </div>
+          </div>
+          <div class="err-box" id="reg-err">
+            <span>❌</span><span id="reg-err-msg"></span>
+          </div>
+          <button type="submit" class="btn btn-primary auth-submit-btn" id="register-btn">Create Account</button>
+        </form>
+
+        <p class="auth-divider mt-16">Already have an account? <a href="#" onclick="switchTab('login')">Login</a></p>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+  var API = 'http://localhost:3000';
+
+  /* ── Redirect if already logged in ───────────────────────── */
+  if (localStorage.getItem('w_token') && localStorage.getItem('w_user')) {
+    window.location.href = 'forum-app.html';
+  }
+
+  /* ── Tab switch ──────────────────────────────────────────── */
+  function switchTab(tab) {
+    var showLogin = (tab === 'login');
+    document.getElementById('login-panel').style.display    = showLogin ? 'block' : 'none';
+    document.getElementById('register-panel').style.display = showLogin ? 'none'  : 'block';
+    document.getElementById('tab-login').classList.toggle('active', showLogin);
+    document.getElementById('tab-register').classList.toggle('active', !showLogin);
+    hideErr('login-err');
+    hideErr('reg-err');
+  }
+
+  /* ── Password toggle ─────────────────────────────────────── */
+  function togglePw(id, btn) {
+    var inp = document.getElementById(id);
+    var isPass = inp.type === 'password';
+    inp.type = isPass ? 'text' : 'password';
+    btn.textContent = isPass ? '🙈' : '👁';
+  }
+
+  /* ── Error helpers ───────────────────────────────────────── */
+  function showErr(boxId, msg) {
+    document.getElementById(boxId).classList.add('show');
+    document.getElementById(boxId + '-msg').textContent = msg;
+  }
+  function hideErr(boxId) {
+    document.getElementById(boxId).classList.remove('show');
+  }
+
+  /* ── Toast ───────────────────────────────────────────────── */
+  function showToast(msg, type) {
+    var icons = { success: '✅', error: '❌', info: '💬' };
+    var c = document.getElementById('toast-container');
+    var t = document.createElement('div');
+    t.className = 'toast toast-' + (type || 'info');
+    t.innerHTML = icons[type] + ' ' + msg;
+    c.appendChild(t);
+    setTimeout(function () {
+      t.classList.add('hiding');
+      setTimeout(function () { t.remove(); }, 400);
+    }, 3000);
+  }
+
+  /* ── Button loading state ────────────────────────────────── */
+  function setLoading(btnId, loading, label) {
+    var b = document.getElementById(btnId);
+    b.disabled = loading;
+    b.innerHTML = loading ? '<span class="spinner"></span> Please wait…' : label;
+  }
+
+  /* ── LOGIN form submit ───────────────────────────────────── */
+  document.getElementById('login-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    hideErr('login-err');
+
+    var username = document.getElementById('login-username').value.trim();
+    var password = document.getElementById('login-password').value;
+
+    if (!username || !password) {
+      showErr('login-err', 'Please fill in all fields.');
+      return;
+    }
+
+    setLoading('login-btn', true, 'Sign In');
+
+    try {
+      var res  = await fetch(API + '/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username, password: password })
+      });
+      var data = await res.json();
+
+      if (!res.ok) {
+        showErr('login-err', data.message || 'Login failed. Check your credentials.');
+        setLoading('login-btn', false, 'Sign In');
+        return;
+      }
+
+      localStorage.setItem('w_token', data.token);
+      localStorage.setItem('w_user',  data.username);
+      showToast('Welcome back! Redirecting…', 'success');
+      setTimeout(function () { window.location.href = 'forum-app.html'; }, 800);
+
+    } catch (err) {
+      showErr('login-err', 'Cannot reach the server. Make sure the backend is running on port 3000.');
+      setLoading('login-btn', false, 'Sign In');
+    }
+  });
+
+  /* ── REGISTER form submit ────────────────────────────────── */
+  document.getElementById('register-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    hideErr('reg-err');
+
+    var username = document.getElementById('reg-username').value.trim();
+    var password = document.getElementById('reg-password').value;
+    var confirm  = document.getElementById('reg-confirm').value;
+
+    if (!username || !password || !confirm) {
+      showErr('reg-err', 'Please fill in all fields.');
+      return;
+    }
+    if (username.length < 3) {
+      showErr('reg-err', 'Username must be at least 3 characters.');
+      return;
+    }
+    if (password.length < 6) {
+      showErr('reg-err', 'Password must be at least 6 characters.');
+      return;
+    }
+    if (password !== confirm) {
+      showErr('reg-err', 'Passwords do not match.');
+      return;
+    }
+
+    setLoading('register-btn', true, 'Create Account');
+
+    try {
+      var res  = await fetch(API + '/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username, password: password })
+      });
+      var data = await res.json();
+
+      if (!res.ok) {
+        showErr('reg-err', data.message || 'Registration failed. Try a different username.');
+        setLoading('register-btn', false, 'Create Account');
+        return;
+      }
+
+      showToast('Account created! Please sign in.', 'success');
+      document.getElementById('register-form').reset();
+      setLoading('register-btn', false, 'Create Account');
+      setTimeout(function () { switchTab('login'); }, 900);
+
+    } catch (err) {
+      showErr('reg-err', 'Cannot reach the server. Make sure the backend is running on port 3000.');
+      setLoading('register-btn', false, 'Create Account');
+    }
+  });
+</script>
+</body>
+</html>

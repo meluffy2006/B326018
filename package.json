@@ -1,0 +1,19 @@
+{
+  "name": "whispr",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "description": "Anonymous Reddit-like forum",
+  "dependencies": {
+    "@mongodb-js/saslprep": "^1.4.10",
+    "cors": "^2.8.6",
+    "crypto": "^1.0.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.6.0",
+    "path": "^0.12.7"
+  },
+  "type": "commonjs"
+}
