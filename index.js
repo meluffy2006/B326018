@@ -12,7 +12,7 @@ const { Types: { ObjectId } } = require("mongoose");
 // ─────────────────────────────────────────────────────────────
 // IMPORTANT: Replace <db_password> with your real MongoDB Atlas password
 // ─────────────────────────────────────────────────────────────
-mongoose.connect("mongodb+srv://omsombehera2011_db_user:E25acLZIOLk99hS9@anomydb.ytdgix2.mongodb.net/anomy")
+mongoose.connect("")
     .then(function()  { console.log("✅  MongoDB connected"); })
     .catch(function(e){ console.error("❌  MongoDB error:", e.message); process.exit(1); });
 
