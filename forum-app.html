@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whispr Forum — Share & Discuss</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #98487e 0%, #0c3054 50%, #0d0f01 100%);
+            overflow-x: hidden;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .slide-up { animation: slideUp 0.6s ease-out; }
+
+        .background-orbs { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; }
+        .orb-1 { width: 320px; height: 320px; top: -160px; right: -160px; background: linear-gradient(135deg, white, #00bfff); }
+        .orb-2 { width: 384px; height: 384px; top: 50%; left: -160px; background: linear-gradient(135deg, #ADD8E6, #4169E1); }
+        .orb-3 { width: 320px; height: 320px; bottom: -160px; right: 33%; background: linear-gradient(135deg, #87CEEB, #4A90E2); }
+
+        /* ── Header ── */
+        .header {
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(59,130,246,0.2);
+        }
+        .header-content {
+            max-width: 1200px; margin: 0 auto; padding: 1.2rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header-title { display: flex; align-items: center; gap: 0.75rem; }
+        .header-title h1 {
+            font-size: 2.2rem; font-weight: 900;
+            background: linear-gradient(90deg, #1e40af, #0369a1, #0ea5e9);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .header-subtitle { color: rgba(30,58,138,0.8); font-size: 0.85rem; margin-top: 0.1rem; }
+        .emoji-icon { font-size: 2.5rem; }
+
+        .header-right { display: flex; align-items: center; gap: 1rem; }
+        .user-badge {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.15); border-radius: 2rem;
+            font-size: 0.85rem; font-weight: 600; color: #1e3a8a;
+        }
+        .logout-btn {
+            background: rgba(239,68,68,0.15); color: #dc2626;
+            border: 1px solid rgba(239,68,68,0.3);
+            padding: 0.5rem 1rem; border-radius: 0.5rem;
+            cursor: pointer; font-weight: 600; font-size: 0.85rem;
+            transition: all 0.2s ease; display: flex; align-items: center; gap: 0.4rem;
+        }
+        .logout-btn:hover { background: rgba(239,68,68,0.25); }
+
+        /* ── Nav tabs ── */
+        .nav-tabs {
+            display: flex; gap: 0.5rem;
+            background: rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 4px;
+        }
+        .nav-tab {
+            padding: 0.4rem 1rem; border: none; border-radius: 0.6rem;
+            background: transparent; color: rgba(30,58,138,0.7);
+            font-family: inherit; font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .nav-tab.active { background: rgba(255,255,255,0.8); color: #1e40af; }
+
+        /* ── Container ── */
+        .container { position: relative; z-index: 10; max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+        /* ── Post Card ── */
+        .post-card {
+            background: rgba(255,255,255,0.85); backdrop-filter: blur(20px);
+            border: 2px solid rgba(59,130,246,0.3); border-radius: 16px;
+            padding: 1.5rem; margin-bottom: 1.5rem; transition: all 0.3s ease;
+        }
+        .post-card:hover {
+            background: rgba(255,255,255,0.95); border-color: rgba(59,130,246,0.8);
+            transform: translateY(-5px); box-shadow: 0 10px 40px rgba(59,130,246,0.25);
+        }
+        .form-title { font-size: 1.5rem; font-weight: 700; color: #1e40af; margin-bottom: 1rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
+        .form-label { font-size: 0.9rem; font-weight: 600; color: #1e40af; }
+
+        .input-glass {
+            background: rgba(255,255,255,0.7); border: 1.5px solid rgba(59,130,246,0.4);
+            color: #1e40af; padding: 0.75rem 1.5rem; border-radius: 0.75rem;
+            font-size: 0.95rem; transition: all 0.3s ease; width: 100%;
+            font-family: 'Poppins', sans-serif;
+        }
+        .input-glass:focus {
+            background: rgba(255,255,255,0.95); border-color: rgba(59,130,246,0.8);
+            box-shadow: 0 0 20px rgba(59,130,246,0.3); outline: none;
+        }
+        .input-glass::placeholder { color: rgba(30,64,175,0.5); }
+        textarea.input-glass { resize: vertical; }
+
+        .neon-button {
+            background: linear-gradient(135deg, #3b82f6, #0ea5e9); color: white;
+            font-weight: 700; border: none; padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem; cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59,130,246,0.3); font-size: 0.95rem;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+        .neon-button:hover { background: linear-gradient(135deg, #0ea5e9, #3b82f6); box-shadow: 0 8px 25px rgba(59,130,246,0.5); transform: translateY(-2px); }
+        .neon-button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* ── Comment / Author row ── */
+        .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+        .comment-author-info { display: flex; align-items: center; gap: 0.75rem; }
+        .avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(14,165,233,0.2));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; font-weight: 700; color: #1e40af;
+        }
+        .comment-author-details { display: flex; flex-direction: column; gap: 0.2rem; }
+        .comment-author-name { font-weight: 600; color: #1e40af; margin: 0; font-size: 0.95rem; }
+        .comment-timestamp { font-size: 0.8rem; color: rgba(30,64,175,0.6); margin: 0; }
+        .mine-tag {
+            font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 1rem;
+            background: rgba(34,197,94,0.15); color: #16a34a; border: 1px solid rgba(34,197,94,0.3);
+        }
+
+        .comment-body { margin: 0.75rem 0; }
+        .comment-text { color: #333; line-height: 1.5; margin: 0; font-size: 0.95rem; }
+
+        .comment-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 0.75rem; padding-top: 0.75rem;
+            border-top: 1px solid rgba(59,130,246,0.1);
+            flex-wrap: wrap; gap: 0.75rem;
+        }
+
+        /* ── Vote buttons ── */
+        .vote-buttons-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .vote-btn {
+            background: rgba(59,130,246,0.1); color: #1e40af;
+            border: 1px solid rgba(59,130,246,0.2); padding: 0.75rem;
+            border-radius: 0.5rem; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center;
+            gap: 0.3rem; font-size: 0.75rem; font-weight: 600;
+            transition: all 0.2s ease; width: 70px; height: 70px; text-align: center;
+        }
+        .vote-btn:hover { background: rgba(59,130,246,0.2); border-color: rgba(59,130,246,0.4); transform: scale(1.05); }
+        .vote-btn.active-up   { background: rgba(34,197,94,0.2); color: #16a34a; border-color: rgba(34,197,94,0.4); }
+        .vote-btn.active-down { background: rgba(239,68,68,0.2); color: #dc2626; border-color: rgba(239,68,68,0.4); }
+        .vote-btn.active-spam { background: rgba(239,68,68,0.2); color: #dc2626; border-color: rgba(239,68,68,0.4); }
+
+        .badge {
+            display: inline-block; padding: 0.35rem 0.75rem;
+            background: rgba(59,130,246,0.15); color: #1e40af;
+            border-radius: 1rem; font-size: 0.8rem; font-weight: 600;
+            border: 1px solid rgba(59,130,246,0.3);
+        }
+        .badge-spam { background: rgba(239,68,68,0.1); color: #dc2626; border-color: rgba(239,68,68,0.3); }
+        .badge-trending { background: rgba(251,146,60,0.15); color: #ea580c; border-color: rgba(251,146,60,0.4); }
+
+        /* ── Empty & Loading ── */
+        .empty-state { text-align: center; padding: 3rem 1rem; color: rgba(30,64,175,0.6); }
+        .empty-state-icon { font-size: 4rem; margin-bottom: 1rem; }
+        .empty-state-text { font-size: 1.1rem; font-weight: 500; }
+
+        .loader-state { text-align: center; padding: 3rem 1rem; }
+        .spinner-blue {
+            width: 40px; height: 40px; border: 3px solid rgba(59,130,246,0.2);
+            border-top-color: #3b82f6; border-radius: 50%;
+            animation: spin 0.7s linear infinite; margin: 0 auto 1rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 100; backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease-out;
+        }
+        .modal-overlay.show { display: flex; align-items: center; justify-content: center; }
+        .modal-content {
+            background: rgba(255,255,255,0.95); border-radius: 16px;
+            width: 90%; max-width: 600px; max-height: 90vh;
+            display: flex; flex-direction: column;
+            box-shadow: 0 20px 60px rgba(59,130,246,0.3);
+            animation: slideUp 0.3s ease-out;
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.5rem; border-bottom: 1px solid rgba(59,130,246,0.2);
+            background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(14,165,233,0.1));
+        }
+        .modal-header h2 { margin: 0; color: #1e40af; font-size: 1.5rem; }
+        .modal-close-btn { background: none; border: none; font-size: 1.5rem; color: #1e40af; cursor: pointer; transition: all 0.2s ease; }
+        .modal-close-btn:hover { transform: rotate(90deg); color: #dc2626; }
+        .modal-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
+        .modal-footer { padding: 1.5rem; border-top: 1px solid rgba(59,130,246,0.2); background: rgba(255,255,255,0.5); }
+        .reply-input-group { display: flex; gap: 0.75rem; }
+        .reply-input-group input { flex: 1; }
+        .reply-button {
+            background: linear-gradient(135deg, rgba(59,130,246,0.8), rgba(14,165,233,0.8));
+            color: white; font-weight: 600; border: none; padding: 0.5rem 1rem;
+            border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem;
+            transition: all 0.2s ease; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .reply-button:hover { box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+        .reply-card {
+            background: rgba(255,255,255,0.7); border: 1px solid rgba(59,130,246,0.25);
+            border-radius: 12px; padding: 1rem; margin-bottom: 1rem;
+            border-left: 3px solid rgba(59,130,246,0.5); transition: all 0.2s ease;
+        }
+        .reply-card:hover { background: rgba(255,255,255,0.85); border-color: rgba(59,130,246,0.5); }
+        .post-preview {
+            background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2);
+            border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem;
+        }
+        .post-preview-text { color: #1e40af; font-weight: 600; margin-bottom: 0.5rem; }
+        .post-preview-content { color: #333; font-size: 0.9rem; line-height: 1.5; }
+        .no-replies-message { text-align: center; color: rgba(30,64,175,0.5); padding: 2rem 1rem; font-size: 0.9rem; }
+
+        /* ── Pages ── */
+        .page { display: none; }
+        .page.active { display: block; }
+        .create-page-header { display: flex; align-items: center; gap: 1rem; }
+        .char-count { font-size: 0.85rem; color: rgba(30,64,175,0.6); margin-top: 0.5rem; }
+        .success-message {
+            display: none; background: rgba(34,197,94,0.15);
+            border: 2px solid rgba(34,197,94,0.4); color: #16a34a;
+            padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem;
+        }
+        .success-message.show { display: block; }
+        .section-divider { border-top: 1px solid rgba(59,130,246,0.2); margin: 1.5rem 0; padding-top: 1.5rem; }
+        .form-actions { display: flex; gap: 1rem; justify-content: flex-end; flex-wrap: wrap; }
+        .back-button {
+            background: rgba(59,130,246,0.15); color: #1e40af;
+            border: 1px solid rgba(59,130,246,0.3);
+            padding: 0.75rem 1rem; border-radius: 0.75rem;
+            cursor: pointer; font-weight: 600;
+            display: flex; align-items: center; gap: 0.5rem;
+            transition: all 0.2s ease; font-size: 0.95rem;
+        }
+        .back-button:hover { background: rgba(59,130,246,0.25); border-color: rgba(59,130,246,0.5); }
+        .cancel-button {
+            background: rgba(59,130,246,0.15); color: #1e40af;
+            border: 1px solid rgba(59,130,246,0.3);
+            padding: 0.75rem 1.5rem; border-radius: 0.75rem;
+            cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.2s ease;
+        }
+        .cancel-button:hover { background: rgba(59,130,246,0.25); border-color: rgba(59,130,246,0.5); }
+
+        /* ── Toast ── */
+        .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 10px; }
+        .toast-item {
+            padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600;
+            backdrop-filter: blur(10px); min-width: 250px;
+            animation: slideUp 0.3s ease;
+        }
+        .toast-item.success { background: rgba(34,197,94,0.9); color: white; }
+        .toast-item.error   { background: rgba(239,68,68,0.9);  color: white; }
+        .toast-item.info    { background: rgba(59,130,246,0.9); color: white; }
+
+        /* Inline error */
+        .api-err {
+            display: none; padding: 0.75rem 1rem; margin-bottom: 0.75rem;
+            background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+            border-radius: 0.75rem; color: #dc2626; font-size: 0.9rem;
+        }
+        .api-err.show { display: block; }
+
+        /* ── Media Upload Styles ── */
+        .media-upload-area {
+            border: 2px dashed rgba(59,130,246,0.4); border-radius: 0.75rem;
+            padding: 1.5rem; text-align: center; cursor: pointer;
+            transition: all 0.3s ease; background: rgba(59,130,246,0.05);
+        }
+        .media-upload-area:hover { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.6); }
+        .media-upload-area.dragover { background: rgba(59,130,246,0.2); border-color: rgba(59,130,246,0.8); }
+        .media-upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .media-upload-text { color: #1e40af; font-weight: 600; font-size: 0.9rem; }
+        .media-upload-hint { color: rgba(30,64,175,0.6); font-size: 0.8rem; margin-top: 0.5rem; }
+
+        .media-preview-container {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem; margin-top: 1rem;
+        }
+        .media-preview-item {
+            position: relative; border-radius: 0.75rem; overflow: hidden;
+            background: rgba(59,130,246,0.1); aspect-ratio: 1; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .media-preview-item img,
+        .media-preview-item video {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .media-remove-btn {
+            position: absolute; top: 0.25rem; right: 0.25rem;
+            background: rgba(239,68,68,0.9); color: white; border: none;
+            border-radius: 50%; width: 28px; height: 28px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+            transition: all 0.2s ease;
+        }
+        .media-remove-btn:hover { background: rgba(239,68,68,1); transform: scale(1.1); }
+
+        .post-media-container {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem; margin-top: 1rem; margin-bottom: 1rem;
+        }
+        .post-media-item {
+            border-radius: 0.75rem; overflow: hidden; background: #000;
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+        .post-media-item img,
+        .post-media-item video {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .post-media-item img {
+            cursor: zoom-in;
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+        .post-media-item img:hover {
+            transform: scale(1.03);
+            filter: brightness(1.08);
+        }
+
+        /* ── Lightbox ── */
+        #lightboxOverlay {
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.92); backdrop-filter: blur(12px);
+            align-items: center; justify-content: center; flex-direction: column;
+            animation: fadeIn 0.2s ease;
+        }
+        #lightboxOverlay.active { display: flex; }
+        #lightboxImg {
+            max-width: 90vw; max-height: 75vh;
+            border-radius: 12px;
+            box-shadow: 0 8px 60px rgba(0,0,0,0.8);
+            object-fit: contain;
+            animation: lightboxPop 0.25s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes lightboxPop {
+            from { opacity: 0; transform: scale(0.85); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        #lightboxClose {
+            position: absolute; top: 18px; right: 22px;
+            background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; font-size: 1.4rem; width: 42px; height: 42px;
+            border-radius: 50%; cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+        }
+        #lightboxClose:hover { background: rgba(220,38,38,0.6); transform: rotate(90deg); }
+        #lightboxActions {
+            margin-top: 1.25rem; display: flex; gap: 0.75rem; align-items: center;
+        }
+        #lightboxCommentBtn {
+            background: linear-gradient(135deg, rgba(59,130,246,0.85), rgba(14,165,233,0.85));
+            color: #fff; font-weight: 600; border: none; padding: 0.6rem 1.4rem;
+            border-radius: 8px; cursor: pointer; font-size: 0.95rem;
+            display: flex; align-items: center; gap: 0.5rem;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        #lightboxCommentBtn:hover { opacity: 0.88; transform: translateY(-1px); }
+        #lightboxCaption {
+            color: rgba(255,255,255,0.55); font-size: 0.8rem; margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-title h1 { font-size: 1.5rem; }
+            .container { padding: 1rem; }
+            .modal-content { width: 95%; max-height: 95vh; }
+            .vote-btn { width: 60px; height: 60px; font-size: 0.65rem; }
+            .nav-tabs { display: none; }
+            .media-preview-container { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="background-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+
+<!-- ═══ POSTS PAGE ════════════════════════════════════════════ -->
+<div id="postsPage" class="page active">
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <span class="emoji-icon">💬</span>
+                <div>
+                    <h1>Whispr Forum</h1>
+                    <p class="header-subtitle" id="feed-subtitle">All Posts</p>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <!-- Tab switcher -->
+                <div class="nav-tabs">
+                    <button class="nav-tab active" id="ntab-all"  onclick="setFeedTab('all')">🌐 All Posts</button>
+                    <button class="nav-tab"        id="ntab-mine" onclick="setFeedTab('mine')">👤 My Posts</button>
+                </div>
+
+                <div class="user-badge">👻 <span id="nav-username"></span></div>
+
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+
+                <button class="neon-button" onclick="showPage('createPage')">
+                    <i class="fas fa-plus"></i> Create Post
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="postsContainer"></div>
+        <div id="emptyState" class="empty-state" style="display:none;">
+            <div class="empty-state-icon">📭</div>
+            <p class="empty-state-text">No posts yet. Be the first to share!</p>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ CREATE POST PAGE ══════════════════════════════════════ -->
+<div id="createPage" class="page">
+    <div class="header">
+        <div class="header-content">
+            <div class="create-page-header">
+                <button class="back-button" onclick="showPage('postsPage')" type="button">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <div class="header-title">
+                    <span class="emoji-icon">✏️</span>
+                    <div>
+                        <h1>Create Post</h1>
+                        <p class="header-subtitle">Share your thoughts anonymously</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div style="max-width:800px;margin:0 auto;">
+            <div class="post-card">
+                <div id="successMessage" class="success-message">
+                    <i class="fas fa-check-circle"></i> Post created successfully! Redirecting…
+                </div>
+                <div id="create-err" class="api-err"></div>
+
+                <div class="form-group">
+                    <label class="form-label">Title <span style="color:#dc2626">*</span></label>
+                    <input type="text" id="postTitle" class="input-glass"
+                        placeholder="Give your post a clear title…" maxlength="120" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">What's on your mind? 💭</label>
+                    <textarea id="postInput" class="input-glass"
+                        placeholder="Share your thoughts, ideas, questions, or anything you'd like to discuss…"
+                        rows="6" style="min-height:150px;"></textarea>
+                    <div class="char-count"><span id="charCount">0</span> / 500 characters</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Topic</label>
+                    <select id="postTopic" class="input-glass">
+                        <option value="General">General</option>
+                        <option value="Workplace">Workplace</option>
+                        <option value="College">College</option>
+                        <option value="Society">Society</option>
+                        <option value="Politics">Politics</option>
+                        <option value="Tech">Tech</option>
+                        <option value="Relationships">Relationships</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">📸 Add Photos or Videos (Optional)</label>
+                    <input type="file" id="mediaInput" multiple accept="image/*,video/*" 
+                        style="display:none" onchange="handleMediaSelect(event)">
+                    <div class="media-upload-area" id="mediaUploadArea" onclick="document.getElementById('mediaInput').click()">
+                        <div class="media-upload-icon">📁</div>
+                        <div class="media-upload-text">Click to upload media or drag & drop</div>
+                        <div class="media-upload-hint">PNG, JPG, GIF, MP4, WebM (Max 5MB each)</div>
+                    </div>
+                    <div id="mediaPreviewContainer" class="media-preview-container"></div>
+                </div>
+
+                <div class="section-divider"></div>
+                <div class="form-actions">
+                    <button class="cancel-button" onclick="showPage('postsPage')" type="button">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button id="postBtn" class="neon-button" onclick="createPost()" type="button">
+                        <i class="fas fa-paper-plane"></i> Post
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ COMMENTS MODAL ════════════════════════════════════════ -->
+<!-- Lightbox -->
+<div id="lightboxOverlay" onclick="closeLightbox(event)">
+    <button id="lightboxClose" onclick="closeLightbox()" title="Close"><i class="fas fa-times"></i></button>
+    <img id="lightboxImg" src="" alt="Full size image">
+    <div id="lightboxActions">
+        <button id="lightboxCommentBtn" onclick="lightboxOpenComments()" type="button">
+            <i class="fas fa-comment"></i> Comment on this post
+        </button>
+    </div>
+    <p id="lightboxCaption">Click outside the image to close</p>
+</div>
+
+<div id="commentsModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>💬 Comments</h2>
+            <button class="modal-close-btn" onclick="closeCommentsModal()" type="button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="postPreviewSection" class="post-preview"></div>
+            <div id="repliesContainer"></div>
+        </div>
+        <div class="modal-footer">
+            <div class="reply-input-group">
+                <input type="text" id="modalReplyInput" class="input-glass"
+                    placeholder="Write a comment…" onkeypress="handleReplyKeypress(event)">
+                <button class="reply-button" type="button" onclick="addModalReply()">
+                    <i class="fas fa-paper-plane"></i> Post
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+    var API   = 'http://localhost:3000';
+    var TOKEN = localStorage.getItem('w_token');
+    var ME    = localStorage.getItem('w_user');
+
+    /* ── Auth guard ────────────────────────────────────────── */
+    if (!TOKEN || !ME) { window.location.href = 'index.html'; }
+    document.getElementById('nav-username').textContent = ME;
+
+    var allPosts        = [];
+    var feedTab         = 'all';   // 'all' | 'mine'
+    var currentModalPostId = null;
+    var MAX_CHARS       = 500;
+
+    /* ── Logout ────────────────────────────────────────────── */
+    function logout() {
+        localStorage.removeItem('w_token');
+        localStorage.removeItem('w_user');
+        window.location.href = 'index.html';
+    }
+
+    /* ── Toast ─────────────────────────────────────────────── */
+    function toast(msg, type) {
+        var c = document.getElementById('toast-wrap');
+        var d = document.createElement('div');
+        d.className = 'toast-item ' + (type || 'info');
+        var icons = { success: '✅', error: '❌', info: 'ℹ️' };
+        d.textContent = (icons[type] || '') + ' ' + msg;
+        c.appendChild(d);
+        setTimeout(function () { d.remove(); }, 3500);
+    }
+
+    /* ── Page switcher ─────────────────────────────────────── */
+    function showPage(name) {
+        document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
+        document.getElementById(name).classList.add('active');
+        window.scrollTo(0, 0);
+        if (name === 'postsPage') loadPosts();
+    }
+
+    /* ── Feed tab ──────────────────────────────────────────── */
+    function setFeedTab(tab) {
+        feedTab = tab;
+        document.getElementById('ntab-all').classList.toggle('active',  tab === 'all');
+        document.getElementById('ntab-mine').classList.toggle('active', tab === 'mine');
+        document.getElementById('feed-subtitle').textContent = tab === 'mine' ? 'My Posts' : 'All Posts';
+        loadPosts();
+    }
+
+    /* ── Auth header ───────────────────────────────────────── */
+    function authHeader() {
+        return { 'Authorization': 'Bearer ' + TOKEN, 'Content-Type': 'application/json' };
+    }
+
+    /* ── Load posts from API ───────────────────────────────── */
+    async function loadPosts() {
+        document.getElementById('postsContainer').innerHTML =
+            '<div class="loader-state"><div class="spinner-blue"></div><p style="color:rgba(30,64,175,0.6);font-size:0.9rem">Loading posts…</p></div>';
+        document.getElementById('emptyState').style.display = 'none';
+
+        try {
+            var url = feedTab === 'mine' ? API + '/posts/mine' : API + '/posts';
+            var res = await fetch(url, { headers: authHeader() });
+
+            if (res.status === 403) { logout(); return; }
+
+            var data = await res.json();
+            allPosts = data.posts || [];
+            renderPosts();
+            loadCommentCounts();
+        } catch (e) {
+            document.getElementById('postsContainer').innerHTML =
+                '<div class="empty-state"><div class="empty-state-icon">⚠️</div>' +
+                '<p class="empty-state-text">Cannot connect to server</p>' +
+                '<p style="font-size:0.9rem;margin-top:0.5rem">Make sure the backend is running:<br><code>node index.js</code></p></div>';
+        }
+    }
+
+    /* ── Load comment counts for all visible posts ─────────── */
+    async function loadCommentCounts() {
+        for (var i = 0; i < allPosts.length; i++) {
+            var postId = allPosts[i]._id;
+            var ccEl = document.getElementById('cc-' + postId);
+            if (!ccEl) continue;
+            try {
+                var res = await fetch(API + '/posts/' + postId + '/comments', { headers: authHeader() });
+                var data = await res.json();
+                var ccEl2 = document.getElementById('cc-' + postId);
+                if (ccEl2) ccEl2.textContent = (data.comments || []).length;
+            } catch (e) {
+                var ccEl2 = document.getElementById('cc-' + postId);
+                if (ccEl2) ccEl2.textContent = '?';
+            }
+        }
+    }
+
+    /* ── Render posts ──────────────────────────────────────── */
+    function renderPosts() {
+        var container   = document.getElementById('postsContainer');
+        var emptyState  = document.getElementById('emptyState');
+
+        if (!allPosts.length) {
+            container.innerHTML = '';
+            emptyState.style.display = 'block';
+            return;
+        }
+
+        emptyState.style.display = 'none';
+        container.innerHTML = allPosts.map(function (post) {
+            var isOwn     = post.username === ME;
+            var initial   = (post.username || '?')[0].toUpperCase();
+            var timeStr   = timeAgo(post.createdAt);
+            var spamBadge = post.spamReports >= 5
+                ? '<span class="badge badge-spam" style="margin-top:0.5rem;display:inline-block"><i class="fas fa-exclamation-triangle"></i> Spam Risk</span>'
+                : '';
+            var trendingBadge = post.isTrending
+                ? '<span class="badge badge-trending" style="margin-top:0.5rem;display:inline-block;margin-left:0.5rem;"><i class="fas fa-fire"></i> Trending</span>'
+                : '';
+            
+            // Generate media HTML
+            var mediaHtml = '';
+            if (post.mediaUrls && post.mediaUrls.length > 0) {
+                mediaHtml = '<div class="post-media-container">';
+                for (var m = 0; m < post.mediaUrls.length; m++) {
+                    var mediaType = post.mediaTypes[m] || 'image';
+                    if (mediaType === 'image') {
+                        mediaHtml += '<div class="post-media-item"><img src="' + post.mediaUrls[m] + '" alt="Post image" onclick="openLightbox(this, \'' + post._id + '\')" title="Click to zoom"></div>';
+                    } else if (mediaType === 'video') {
+                        mediaHtml += '<div class="post-media-item"><video controls style="width:100%;height:100%;object-fit:cover;"><source src="' + post.mediaUrls[m] + '"></video></div>';
+                    }
+                }
+                mediaHtml += '</div>';
+            }
+
+            return '<div class="post-card slide-up" id="pc-' + post._id + '">' +
+                '<div class="comment-header">' +
+                    '<div class="comment-author-info">' +
+                        '<div class="avatar">' + initial + '</div>' +
+                        '<div class="comment-author-details">' +
+                            '<p class="comment-author-name">u/' + esc(post.username) +
+                                (isOwn ? ' <span class="mine-tag">✦ You</span>' : '') + '</p>' +
+                            '<p class="comment-timestamp">' + timeStr + ' · ' + esc(post.topic) + '</p>' +
+                        '</div>' +
+                    '</div>' +
+                    (isOwn
+                        ? '<button onclick="deletePost(\'' + post._id + '\')" style="background:rgba(239,68,68,0.1);color:#dc2626;border:1px solid rgba(239,68,68,0.2);padding:0.4rem 0.8rem;border-radius:0.5rem;cursor:pointer;font-size:0.8rem;font-weight:600;"><i class="fas fa-trash"></i> Delete</button>'
+                        : '') +
+                '</div>' +
+                '<div class="comment-body">' +
+                    '<p style="font-size:1rem;font-weight:700;color:#1e40af;margin-bottom:0.4rem">' + esc(post.title) + '</p>' +
+                    '<p class="comment-text">' + esc(post.content) + '</p>' +
+                '</div>' +
+                mediaHtml +
+                spamBadge +
+                trendingBadge +
+                '<div class="comment-footer">' +
+                    '<div class="vote-buttons-group">' +
+                        '<button class="vote-btn" onclick="vote(\'' + post._id + '\',\'up\')">' +
+                            '<i class="fas fa-thumbs-up" style="font-size:1.2rem;"></i>' +
+                            '<span>' + post.upvotes + '</span>' +
+                            '<span style="font-size:0.7rem;">Upvote</span>' +
+                        '</button>' +
+                        '<button class="vote-btn" onclick="vote(\'' + post._id + '\',\'down\')">' +
+                            '<i class="fas fa-thumbs-down" style="font-size:1.2rem;"></i>' +
+                            '<span>' + post.downvotes + '</span>' +
+                            '<span style="font-size:0.7rem;">Downvote</span>' +
+                        '</button>' +
+                        '<button class="vote-btn" onclick="openCommentsModal(\'' + post._id + '\')">' +
+                            '<i class="fas fa-comment" style="font-size:1.2rem;"></i>' +
+                            '<span id="cc-' + post._id + '">…</span>' +
+                            '<span style="font-size:0.7rem;">Comments</span>' +
+                        '</button>' +
+                    '</div>' +
+                    '<button class="vote-btn" onclick="reportSpam(\'' + post._id + '\')">' +
+                        '<i class="fas fa-flag" style="font-size:1.2rem;"></i>' +
+                        '<span>' + post.spamReports + '</span>' +
+                        '<span style="font-size:0.7rem;">Spam</span>' +
+                    '</button>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    /* ── Vote ──────────────────────────────────────────────── */
+    async function vote(postId, type) {
+        try {
+            var res  = await fetch(API + '/posts/' + postId + '/vote', {
+                method: 'POST',
+                headers: authHeader(),
+                body: JSON.stringify({ type: type })
+            });
+            var data = await res.json();
+            if (res.ok && data.post) {
+                var idx = allPosts.findIndex(function (p) { return p._id === postId; });
+                if (idx !== -1) allPosts[idx] = data.post;
+                renderPosts();
+                // Reload comment counts since renderPosts redraws everything
+                loadCommentCounts();
+                if (data.message && data.message !== 'Vote recorded successfully') {
+                    toast(data.message, 'info');
+                }
+            } else {
+                toast(data.message || 'Vote failed', 'error');
+            }
+        } catch (e) { toast('Vote failed', 'error'); }
+    }
+
+    /* ── Spam ──────────────────────────────────────────────── */
+    async function reportSpam(postId) {
+        try {
+            var res  = await fetch(API + '/posts/' + postId + '/spam', {
+                method: 'POST', headers: authHeader()
+            });
+            var data = await res.json();
+            if (res.ok && data.post) {
+                var idx = allPosts.findIndex(function (p) { return p._id === postId; });
+                if (idx !== -1) allPosts[idx] = data.post;
+                renderPosts();
+                loadCommentCounts();
+                toast('Spam reported', 'info');
+            } else {
+                toast(data.message || 'Failed to report spam', 'error');
+            }
+        } catch (e) { toast('Failed', 'error'); }
+    }
+
+    /* ── Delete post ───────────────────────────────────────── */
+    async function deletePost(postId) {
+        if (!confirm('Delete this post permanently?')) return;
+        try {
+            var res = await fetch(API + '/posts/' + postId, {
+                method: 'DELETE', headers: authHeader()
+            });
+            if (res.ok) {
+                allPosts = allPosts.filter(function (p) { return p._id !== postId; });
+                renderPosts();
+                loadCommentCounts();
+                toast('Post deleted', 'success');
+            } else {
+                toast('Could not delete post', 'error');
+            }
+        } catch (e) { toast('Delete failed', 'error'); }
+    }
+
+    /* ── Media management ──────────────────────────────────── */
+    var uploadedMedia = []; // Array of {url: base64, type: "image"|"video"}
+
+    /* ── Lightbox ──────────────────────────────────────────── */
+    var _lightboxPostId = null;
+
+    function openLightbox(imgEl, postId) {
+        _lightboxPostId = postId;
+        document.getElementById('lightboxImg').src = imgEl.src;
+        document.getElementById('lightboxOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox(e) {
+        // If called from overlay click, only close when clicking the backdrop (not the image itself)
+        if (e && e.target.id === 'lightboxImg') return;
+        document.getElementById('lightboxOverlay').classList.remove('active');
+        document.getElementById('lightboxImg').src = '';
+        document.body.style.overflow = '';
+        _lightboxPostId = null;
+    }
+
+    function lightboxOpenComments() {
+        if (!_lightboxPostId) return;
+        closeLightbox();
+        openCommentsModal(_lightboxPostId);
+    }
+
+    // Close lightbox on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeLightbox();
+    });
+
+    function setupMediaUploadArea() {
+        var uploadArea = document.getElementById('mediaUploadArea');
+        if (!uploadArea) return; // Element doesn't exist on this page
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', function() {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            var files = e.dataTransfer.files;
+            handleMediaFiles(files);
+        });
+    }
+
+    function handleMediaSelect(event) {
+        var files = event.target.files;
+        handleMediaFiles(files);
+    }
+
+    async function handleMediaFiles(files) {
+        var MAX_SIZE = 5 * 1024 * 1024; // 5MB
+        var MAX_FILES = 10;
+
+        if (uploadedMedia.length + files.length > MAX_FILES) {
+            toast('Maximum ' + MAX_FILES + ' files allowed', 'error');
+            return;
+        }
+
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            if (file.size > MAX_SIZE) {
+                toast('File "' + file.name + '" is too large. Max 5MB.', 'error');
+                continue;
+            }
+
+            var isImage = file.type.startsWith('image/');
+            var isVideo = file.type.startsWith('video/');
+            if (!isImage && !isVideo) {
+                toast('Invalid file type: ' + file.type + '. Only images and videos allowed.', 'error');
+                continue;
+            }
+
+            var reader = new FileReader();
+            reader.onload = (function(f, type) {
+                return function(e) {
+                    uploadedMedia.push({
+                        url: e.target.result,
+                        type: type === 'image' ? 'image' : 'video'
+                    });
+                    renderMediaPreviews();
+                };
+            })(file, isImage ? 'image' : 'video');
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function renderMediaPreviews() {
+        var container = document.getElementById('mediaPreviewContainer');
+        if (!container) return; // Container doesn't exist on this page
+        
+        container.innerHTML = uploadedMedia.map(function(m, idx) {
+            var tag = m.type === 'image' 
+                ? '<img src="' + m.url + '" alt="Preview">'
+                : '<video style="width:100%;height:100%;object-fit:cover;"><source src="' + m.url + '"></video>';
+            return '<div class="media-preview-item">' +
+                tag +
+                '<button class="media-remove-btn" type="button" onclick="removeMedia(' + idx + ')"><i class="fas fa-trash"></i></button>' +
+                '</div>';
+        }).join('');
+    }
+
+    function removeMedia(index) {
+        uploadedMedia.splice(index, 1);
+        renderMediaPreviews();
+    }
+
+    /* ── Create Post ───────────────────────────────────────── */
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('postInput').addEventListener('input', function () {
+            var len = this.value.length;
+            if (len > MAX_CHARS) { this.value = this.value.substring(0, MAX_CHARS); len = MAX_CHARS; }
+            document.getElementById('charCount').textContent = len;
+        });
+
+        setupMediaUploadArea();
+        // Load posts on boot
+        loadPosts();
+    });
+
+    async function createPost() {
+        var title   = document.getElementById('postTitle').value.trim();
+        var content = document.getElementById('postInput').value.trim();
+        var topic   = document.getElementById('postTopic').value;
+        var errEl   = document.getElementById('create-err');
+
+        errEl.classList.remove('show');
+
+        if (!title || !content) {
+            errEl.textContent = 'Please fill in the title and content.';
+            errEl.classList.add('show');
+            return;
+        }
+
+        var btn = document.getElementById('postBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting…';
+
+        try {
+            var mediaUrls = uploadedMedia.map(function(m) { return m.url; });
+            var mediaTypes = uploadedMedia.map(function(m) { return m.type; });
+
+            var res  = await fetch(API + '/posts', {
+                method: 'POST',
+                headers: authHeader(),
+                body: JSON.stringify({ 
+                    title: title, 
+                    content: content, 
+                    topic: topic,
+                    mediaUrls: mediaUrls,
+                    mediaTypes: mediaTypes
+                })
+            });
+            var data = await res.json();
+
+            if (!res.ok) {
+                errEl.textContent = data.message || 'Failed to create post.';
+                errEl.classList.add('show');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+                return;
+            }
+
+            document.getElementById('successMessage').classList.add('show');
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postInput').value = '';
+            document.getElementById('charCount').textContent = '0';
+            document.getElementById('mediaInput').value = '';
+            uploadedMedia = [];
+            renderMediaPreviews();
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+
+            setTimeout(function () {
+                document.getElementById('successMessage').classList.remove('show');
+                showPage('postsPage');
+            }, 1500);
+
+        } catch (e) {
+            errEl.textContent = 'Server error. Is the backend running?';
+            errEl.classList.add('show');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+        }
+    }
+
+    /* ── Comments Modal ────────────────────────────────────── */
+    async function openCommentsModal(postId) {
+        var post = allPosts.find(function (p) { return p._id === postId; });
+        if (!post) return;
+        currentModalPostId = postId;
+
+        document.getElementById('postPreviewSection').innerHTML =
+            '<div class="post-preview-text">Post by u/' + esc(post.username) + '</div>' +
+            '<p style="font-weight:700;color:#1e40af;margin-bottom:0.3rem">' + esc(post.title) + '</p>' +
+            '<div class="post-preview-content">' + esc(post.content) + '</div>';
+
+        document.getElementById('repliesContainer').innerHTML =
+            '<div class="loader-state"><div class="spinner-blue"></div></div>';
+        document.getElementById('commentsModal').classList.add('show');
+        document.getElementById('modalReplyInput').value = '';
+
+        await loadComments(postId);
+    }
+
+    async function loadComments(postId) {
+        try {
+            var res  = await fetch(API + '/posts/' + postId + '/comments', { headers: authHeader() });
+            var data = await res.json();
+            var comments = data.comments || [];
+
+            var html = '';
+            if (!comments.length) {
+                html = '<div class="no-replies-message">No comments yet. Be the first to comment!</div>';
+            } else {
+                html = comments.map(function (c) {
+                    var init = (c.username || '?')[0].toUpperCase();
+                    return '<div class="reply-card">' +
+                        '<div class="comment-header">' +
+                            '<div class="comment-author-info">' +
+                                '<div class="avatar">' + init + '</div>' +
+                                '<div class="comment-author-details">' +
+                                    '<p class="comment-author-name">u/' + esc(c.username) + '</p>' +
+                                    '<p class="comment-timestamp">' + timeAgo(c.createdAt) + '</p>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="comment-body"><p class="comment-text">' + esc(c.content) + '</p></div>' +
+                    '</div>';
+                }).join('');
+            }
+
+            document.getElementById('repliesContainer').innerHTML = html;
+
+            // Update comment count badge on feed card
+            var ccEl = document.getElementById('cc-' + postId);
+            if (ccEl) ccEl.textContent = comments.length;
+
+        } catch (e) {
+            document.getElementById('repliesContainer').innerHTML =
+                '<div style="color:#dc2626;padding:1rem">Failed to load comments.</div>';
+        }
+    }
+
+    function closeCommentsModal() {
+        document.getElementById('commentsModal').classList.remove('show');
+        currentModalPostId = null;
+    }
+
+    function handleReplyKeypress(e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addModalReply(); }
+    }
+
+    async function addModalReply() {
+        var input   = document.getElementById('modalReplyInput');
+        var content = input.value.trim();
+        if (!content || !currentModalPostId) return;
+
+        try {
+            var res = await fetch(API + '/posts/' + currentModalPostId + '/comments', {
+                method: 'POST',
+                headers: authHeader(),
+                body: JSON.stringify({ content: content })
+            });
+            if (res.ok) {
+                input.value = '';
+                await loadComments(currentModalPostId);
+                toast('Comment posted!', 'success');
+            } else {
+                var d = await res.json();
+                toast(d.message || 'Failed to post comment', 'error');
+            }
+        } catch (e) { toast('Server error', 'error'); }
+    }
+
+    /* ── Helpers ───────────────────────────────────────────── */
+    function esc(str) {
+        return String(str || '')
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function timeAgo(iso) {
+        if (!iso) return '';
+        var s = (Date.now() - new Date(iso)) / 1000;
+        if (s < 60)    return 'just now';
+        if (s < 3600)  return Math.floor(s / 60) + 'm ago';
+        if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+        return Math.floor(s / 86400) + 'd ago';
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeCommentsModal();
+    });
+</script>
+</body>
+</html>
