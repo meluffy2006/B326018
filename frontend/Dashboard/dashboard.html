@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard | Safety Rover</title>
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../Dashboard/dashboard.css">
+<link rel="stylesheet" href="../CameraMonitor/camera-monitor.css">
+<link rel="stylesheet" href="../SensorData/sensor-data.css">
+<link rel="stylesheet" href="../RoverStatus/rover-status.css">
+<link rel="stylesheet" href="../Alerts/alerts.css">
+</head>
+<body>
+<div class="shell">
+  <div id="navbar-slot"></div>
+  <div id="sidebar-slot"></div>
+  <main class="shell-main">
+    <div class="grid">
+      <section class="s7" id="cam">
+        <h2>📹 Live Camera <small id="camMode">Normal view &middot; Coach B, Zone 3</small></h2>
+        <div class="camwrap"><canvas class="feed" id="feed" width="640" height="360"></canvas><div class="rec"><b>●</b> LIVE</div><div class="ts" id="camTs"></div></div>
+        <div class="ctrl">
+          <button class="on" data-mode="normal">Normal</button><button data-mode="thermal">Thermal</button><button data-mode="night">Low-light</button>
+          <button id="lights" class="on">LED lights: on</button><button id="snapBtn">📸 Capture snapshot</button>
+        </div>
+      </section>
+
+      <section class="s5" id="alerts">
+        <h2>🚨 Alerts <small>suspicious / anomaly detection</small></h2>
+        <div class="list" id="alertList"></div>
+        <div class="ctrl"><button id="simAlert">Simulate anomaly</button><button id="buzz">🔔 Test buzzer</button></div>
+      </section>
+
+      <section class="s5" id="map">
+        <h2>🗺️ Live Map <small id="pos">--</small></h2>
+        <canvas class="map-canvas" id="mapc" width="520" height="390"></canvas>
+        <a class="maplink" href="../Maps/maps.html">Open full GPS map &rarr;</a>
+      </section>
+
+      <section class="s7" id="sensors">
+        <h2>📊 Sensor Data <small>updates every second</small></h2>
+        <div class="cards" id="sensorCards"></div>
+      </section>
+
+      <section class="s5" id="evid">
+        <h2>📸 Evidence <small>auto snapshots + event history</small></h2>
+        <div class="snaps" id="snaps"></div>
+        <div class="list" id="history" style="max-height:170px"></div>
+      </section>
+
+      <section class="s3 human" id="human">
+        <h2>👮 Human Verification</h2>
+        <div class="sel-box" id="selBox">Select an alert to review it.</div>
+        <div class="ctrl">
+          <button class="ok" id="confirm" disabled>Confirm threat</button>
+          <button class="bad" id="false" disabled>Mark false alarm</button>
+          <button id="escal" disabled>Escalate to control room</button>
+        </div>
+        <div class="kv" style="margin-top:10px"><span>Verified today</span><b id="vCount">0</b></div>
+      </section>
+
+      <section class="s4" id="health">
+        <h2>🔋 Rover Health</h2>
+        <div class="kv"><span>Battery</span><b id="rhBat">--</b></div>
+        <div class="kv"><span>Connection (Wi-Fi)</span><b id="rhNet">--</b></div>
+        <div class="kv"><span>Motors (4-wheel track)</span><b id="rhMot">OK</b></div>
+        <div class="kv"><span>Camera</span><b id="rhCam">OK</b></div>
+        <div class="kv"><span>Thermal sensor</span><b id="rhTh">OK</b></div>
+        <div class="kv"><span>Processor load (Pi)</span><b id="rhCpu">--</b></div>
+      </section>
+    </div>
+    <footer>Smarter Inspection &nbsp;|&nbsp; Safer Operations &nbsp;|&nbsp; Affordable Innovation</footer>
+  </main>
+</div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../CameraMonitor/camera-monitor.js"></script>
+<script src="../SensorData/sensor-data.js"></script>
+<script src="../Alerts/alerts.js"></script>
+<script src="../RoverStatus/rover-status.js"></script>
+<script src="../Dashboard/dashboard.js"></script>
+</body>
+</html>

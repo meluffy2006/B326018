@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safety Rover - Live Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="maps.css">
+</head>
+<body>
+  <header>
+    <h1>🗺️ Live Map <small>Under-Coach Safety Rover</small></h1>
+    <span><a class="back" href="../Dashboard/dashboard.html">&larr; Command Center</a> <span id="status" class="badge off">Waiting for rover</span></span>
+  </header>
+  <main>
+    <div id="map"></div>
+    <aside>
+      <div class="row"><span>Latitude</span><b id="lat">--</b></div>
+      <div class="row"><span>Longitude</span><b id="lng">--</b></div>
+      <div class="row"><span>Speed</span><b id="spd">--</b></div>
+      <div class="row"><span>Heading</span><b id="hdg">--</b></div>
+      <div class="row"><span>Last update</span><b id="upd">--</b></div>
+      <div class="btns">
+        <button id="follow" class="on">Follow rover</button>
+        <button id="clear">Clear trail</button>
+      </div>
+    </aside>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="maps.js"></script>
+</body>
+</html>
