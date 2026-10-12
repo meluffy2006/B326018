@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: axion-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: axion_db
+      POSTGRES_USER: axion_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - axion_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U axion_user -d axion_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  axion_postgres_data:

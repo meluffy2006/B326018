@@ -1,0 +1,11 @@
+/* Live camera */
+.camwrap{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#000}
+canvas.feed{width:100%;display:block;aspect-ratio:16/9}
+.rec{position:absolute;top:10px;left:12px;font-size:.8rem;background:rgba(0,0,0,.55);padding:4px 9px;border-radius:6px}
+.rec b{color:var(--bad);animation:bl 1.2s infinite}
+@keyframes bl{50%{opacity:.2}}
+.ts{position:absolute;top:10px;right:12px;font-size:.8rem;background:rgba(0,0,0,.55);padding:4px 9px;border-radius:6px}
+
+/* Evidence */
+.snaps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.snaps canvas,.snaps img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#000}

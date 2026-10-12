@@ -1,0 +1,8 @@
+/* Dashboard grid and the individual panels */
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.grid>section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.grid h2{font-size:1rem;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.grid h2 small{color:var(--dim);font-weight:400;font-size:.78rem}
+.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.s8{grid-column:span 8}.s12{grid-column:span 12}
+@media(max-width:1200px){.s3,.s4{grid-column:span 6}}
+@media(max-width:1000px){.grid>section{grid-column:span 12}}

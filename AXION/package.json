@@ -1,0 +1,19 @@
+{
+  "name": "axion",
+  "version": "1.0.0",
+  "description": "Under-Coach Safety Rover - command center and live map",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "demo": "node backend/server.js --demo",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:test": "node backend/test-db.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^18.0.7",
+    "express": "^5.2.1",
+    "pg": "^8.23.1"
+  }
+}

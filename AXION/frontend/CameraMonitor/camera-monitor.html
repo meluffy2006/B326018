@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Camera Monitor | Safety Rover</title>
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../Dashboard/dashboard.css">
+<link rel="stylesheet" href="../CameraMonitor/camera-monitor.css">
+</head>
+<body>
+<div class="shell">
+  <div id="navbar-slot"></div>
+  <div id="sidebar-slot"></div>
+  <main class="shell-main">
+    <div class="grid">
+      <section class="s7" id="cam">
+        <h2>📹 Live Camera <small id="camMode">Normal view &middot; Coach B, Zone 3</small></h2>
+        <div class="camwrap"><canvas class="feed" id="feed" width="640" height="360"></canvas><div class="rec"><b>●</b> LIVE</div><div class="ts" id="camTs"></div></div>
+        <div class="ctrl">
+          <button class="on" data-mode="normal">Normal</button><button data-mode="thermal">Thermal</button><button data-mode="night">Low-light</button>
+          <button id="lights" class="on">LED lights: on</button><button id="snapBtn">📸 Capture snapshot</button>
+        </div>
+      </section>
+
+      <section class="s5" id="evid">
+        <h2>📸 Evidence <small>auto snapshots + event history</small></h2>
+        <div class="snaps" id="snaps"></div>
+        <div class="list" id="history" style="max-height:170px"></div>
+      </section>
+    </div>
+    <footer>Smarter Inspection &nbsp;|&nbsp; Safer Operations &nbsp;|&nbsp; Affordable Innovation</footer>
+  </main>
+</div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../CameraMonitor/camera-monitor.js"></script>
+<script src="../SensorData/sensor-data.js"></script>
+<script src="../Alerts/alerts.js"></script>
+<script src="../RoverStatus/rover-status.js"></script>
+<script src="../Dashboard/dashboard.js"></script>
+</body>
+</html>
