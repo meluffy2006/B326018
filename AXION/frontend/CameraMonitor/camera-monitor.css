@@ -16,12 +16,13 @@
 
 /* ESP32 CAMERA IFRAME */
 
-iframe.feed {
+.feed {
     width: 100%;
     height: 100%;
     display: block;
     border: none;
     background: #000;
+    object-fit: contain;
 }
 
 /* LIVE INDICATOR */
@@ -212,3 +213,5 @@ iframe.feed {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+.feed[hidden] { display: none; }
