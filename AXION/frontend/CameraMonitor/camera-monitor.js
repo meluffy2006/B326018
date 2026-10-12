@@ -16,7 +16,15 @@
     ========================================== */
 
     // Exact URL provided by the user.
+    // >>> PASTE THE CAMERA LINK HERE (the only line you need to edit) <<<
     const CAMERA_URL = "http://10.119.183.243";
+
+    // Derived from the link above. The ESP32 serves live video on port 81.
+    const STREAM_URL = CAMERA_URL.replace(/\/+$/, "") + ":81/stream";
+
+    let retryTimer = null;
+    let failCount = 0;
+    let pageFrame = null;
 
     let camera = null;
     let currentMode = "normal";
@@ -39,13 +47,19 @@
 
         if (!camera) return;
 
+        clearTimeout(retryTimer);
+
+        if (pageFrame) pageFrame.hidden = true;
+        camera.hidden = false;
+
         setCameraStatus("LOADING");
 
-        camera.src = CAMERA_URL;
+        // Timestamp forces a fresh stream connection.
+        camera.src = STREAM_URL + "?t=" + Date.now();
 
         console.log(
-            "Opening ESP32 camera:",
-            CAMERA_URL
+            "Opening ESP32 stream:",
+            STREAM_URL
         );
 
     }
@@ -56,13 +70,12 @@
 
         setCameraStatus("RECONNECTING");
 
-        // Reload the exact URL without adding
-        // a different endpoint or port.
-        camera.src = "about:blank";
+        failCount = 0;
+        camera.removeAttribute("src");
 
-        setTimeout(() => {
-            camera.src = CAMERA_URL;
-        }, 150);
+        // The ESP32 only serves one viewer at a time,
+        // so give it a moment to release the old stream.
+        setTimeout(connectCamera, 500);
 
     }
 
@@ -359,6 +372,25 @@
 
         camera = $("feed");
 
+        // Replace the old canvas (Dashboard) or iframe (Camera Monitor)
+        // with an <img>, which can play the ESP32 MJPEG stream.
+        if (camera && camera.tagName !== "IMG") {
+
+            const img = document.createElement("img");
+
+            img.className = "feed";
+            img.id = "feed";
+            img.alt = "AXION ESP32 Live Camera";
+
+            img.style.cssText =
+                "width:100%;height:100%;display:block;" +
+                "object-fit:contain;background:#000;";
+
+            camera.replaceWith(img);
+            camera = img;
+
+        }
+
         renderSnaps();
         renderHist();
 
@@ -376,23 +408,52 @@
 
         }
 
-        /* IFRAME LOAD EVENT */
+        /* STREAM EVENTS */
 
         camera.addEventListener("load", () => {
 
-            /*
-             * The load event does not prove that
-             * the video is actually playing.
-             *
-             * It only indicates that iframe
-             * navigation has completed.
-             */
+            failCount = 0;
+            setCameraStatus("LIVE");
 
-            setCameraStatus("CAMERA");
+        });
 
-            console.log(
-                "Camera iframe load event received."
-            );
+        camera.addEventListener("error", () => {
+
+            failCount++;
+
+            // Stream did not start: show the camera's own page instead.
+            if (failCount >= 3) {
+
+                if (!pageFrame) {
+
+                    pageFrame = document.createElement("iframe");
+
+                    pageFrame.className = "feed";
+                    pageFrame.title = "AXION ESP32 Camera Page";
+                    pageFrame.allowFullscreen = true;
+
+                    pageFrame.style.cssText =
+                        "width:100%;height:100%;display:block;" +
+                        "border:none;background:#000;";
+
+                    camera.after(pageFrame);
+
+                }
+
+                camera.hidden = true;
+                pageFrame.hidden = false;
+                pageFrame.src = CAMERA_URL;
+
+                setCameraStatus("CAMERA PAGE");
+
+                return;
+
+            }
+
+            setCameraStatus("OFFLINE - retrying");
+
+            clearTimeout(retryTimer);
+            retryTimer = setTimeout(connectCamera, 3000);
 
         });
 
